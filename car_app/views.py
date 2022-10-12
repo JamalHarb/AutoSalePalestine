@@ -1,4 +1,3 @@
-from multiprocessing import context
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
 from . import models
@@ -45,6 +44,7 @@ def dashboard(request):
             'cars': models.get_searched_cars(request),
             'min_year': models.year_limits()[0],
             'max_year': models.year_limits()[1],
+            'lastCars': models.Car.objects.all().order_by('-id')[:5],
         }
     except:
         print('except')
@@ -56,6 +56,7 @@ def dashboard(request):
             'cars': [],
             'min_year': models.year_limits()[0],
             'max_year': models.year_limits()[1],
+            'lastCars': models.Car.objects.all().order_by('-id')[:5],
         }
     # if 'search_result' in request.session:
     #     context['cars'] = request.session['search_result']
