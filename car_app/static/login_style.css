@@ -1,0 +1,55 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: cursive;
+}
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.container{
+    display: flex;
+    width: 70%;
+    justify-content: space-between;
+    margin-top: 5%;
+    /* border: 1px dotted red; */
+}
+p.top{
+    font-size: 200%;
+    text-align: center;
+}
+table{
+    width: 120%;
+    margin-bottom: 5%;
+    border-collapse: separate;
+    border-spacing: 10px;
+    /* border: 1px dotted red; */
+}
+td{
+    width: 30%;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.success-container{
+    width: 90%;
+    margin: 1% auto;
+}
+a{
+    float: right;
+}
+p.success{
+    font-size: 150%;
+}
+p.green{
+    color: green;
+}
+.message{
+    margin: 0 auto;
+}
+ul.messages{
+    margin-top: 7%;
+}

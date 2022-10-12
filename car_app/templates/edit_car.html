@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Edit {{car.model.manufacturer.manufacturer}} {{car.model.model}}</h1>
+    <p><a href="/goback/{{car.id}}">Go Back</a></p>
+    <form action="/car/{{car.id}}/update" method="post">
+        {% csrf_token %}
+        Manufacturer: <select name="manufacturer">
+            <option value="None" >select manufacturer</option>
+            {% for manufacturer in manufacturers %}
+                {% if manufacturer == car.model.manufacturer %}
+                    <option selected value="{{manufacturer.manufacturer}}">{{manufacturer.manufacturer}}</option>
+                {% else %}
+                    <option value="{{manufacturer.manufacturer}}">{{manufacturer.manufacturer}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        Model: <select name="model">
+            <option value="None">select model</option>
+            {% for model in models %}
+                {% if model == car.model %}
+                    <option selected value="{{model.model}}">{{model.model}}</option>
+                {% else %}
+                    <option value="{{model.model}}">{{model.model}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <p>Year: <input name="year" type="number" min="{{min_year}}" max="{{max_year}}" value="{{car.year}}"></p>
+        <p>Color: <input type="text" name="color" value="{{car.color}}"></p>
+        <p>City: <select name="city">
+            <option value="None">select city</option>
+            {% for city in cities %}
+                {% if city == car.city %}
+                    <option selected value="{{city.name}}">{{city.name}}</option>
+                {% else %}
+                    <option value="{{city.name}}">{{city.name}}</option>
+                {% endif %}
+            {% endfor %}
+            </select>
+        </p>
+        <p>Number of passengers: <input type="number" min="1" max="10" name="num-passengers" value="{{car.num_passengers}}"></p>
+        <p>Status: <input type="text" name="status" value="{{car.status}}"></p>
+        <p>Price: <input type="number" name="price" value="{{car.price}}"></p>
+        <p>Power Source: <select name="power-source">
+            <option value="None">select power source</option>
+            {% for source in sources %}
+                {% if source == car.power_source %}
+                    <option selected value="{{source.source}}">{{source.source}}</option>
+                {% else %}
+                    <option value="{{source.source}}">{{source.source}}</option>
+                {% endif %}
+            {% endfor %}
+            </select></p>
+        <p>Transmission: <input type="text" name="transmission" value="{{car.transmission}}"></p>
+        <p>Brake Horsepower: <input type="number" name="bhp" value="{{car.bhp}}"></p>
+        <p>Features: <textarea name="features" cols="30" rows="10">{{car.features}}</textarea></p>
+        <p>Photo: <input type="file" multiple name="photo" onchange="loadFile(event)"></p>
+        <p><input type="submit" value="Edit Car"></p>
+    </form>
+</body>
+</html>

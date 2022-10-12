@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}
+    <script src="{% static 'script/script.js' %}"></script>
+</head>
+<body>
+    <p><a href="/my_cars">My Cars</a></p>
+    <p><a href="/car/{{car.id}}/edit">edit</a></p>
+    <p>Manufacturer: {{car.model.manufacturer.manufacturer}}</p>
+    <p>Model: {{car.model.model}}</p>
+    <p>Year: {{car.year}}</p>
+    <p>Color: {{car.color}}</p>
+    <p>City: {{car.city.name}}</p>
+    <p>Number of passengers: {{car.num_passengers}}</p>
+    <p>Status: {{car.status}}</p>
+    <p>Price: {{car.price}}</p>
+    <p>Power Source: {{car.power_source.source}}</p>
+    <p>Transmission: {{car.transmission}}</p>
+    <p>Brake Horsepower: {{car.bhp}}</p>
+    <p>Features: {{car.features}}</p>
+    <p>Photo: <img id="output" alt="{{car.model.model}}"></p>
+</body>
+</html>
