@@ -47,13 +47,13 @@
         <p>Brake Horsepower: <input type="number" name="bhp"></p>
         <input type="submit" value="Search">
     </form><br><br><br>
-    <div class="search-results" style="border: 2px solid black;">
-        {% if cars %}
-        <p>success</p>
-            {% for car in cars %}
-                <p>{{car}} {{car}}</p>
-            {% endfor %}
-        {% endif %}
-    </div>
+    {% if request.session.search_models %}
+        <div class="search-results" style="border: 2px solid black;">
+            <p>success</p>
+                {% for model in request.session.search_models %}
+                    <p>{{model.fields.model}}</p>
+                {% endfor %}
+        </div>
+    {% endif %}
 </body>
 </html>

@@ -141,7 +141,7 @@ class Car(models.Model):
     num_passengers = models.IntegerField(validators=[MinValueValidator(1)], null=True)
     transmission = models.CharField(max_length=9, null=True)
     status = models.CharField(max_length=4, null=True)
-    price = models.DecimalField(decimal_places=2, max_digits=8, null=True)
+    price = models.IntegerField(validators=[MinValueValidator(1)], null=True)
     bhp = models.IntegerField(null=True)
     features = models.TextField(null=True)
     photo = models.CharField(max_length=255, null=True)
@@ -254,6 +254,9 @@ def get_all_models():
 def get_car_model(request):
     return CarModel.objects.get(model=request.POST['model'], manufacturer=get_manufacturer(request))
 
+def get_car_model_by_id(id):
+    return CarModel.objects.get(id=id)
+
 def get_all_sources():
     return PowerSource.objects.all()
 
@@ -313,7 +316,18 @@ def update_car(request, id):
 
 def get_searched_cars(request):
     user = get_logged_user(request)
-    # return Car.objects.filter(color = request.POST['color']).filter(year = int(request.POST['year'])).filter(num_passengers = int(request.POST['num-passengers'])).filter(transmission = request.POST['transmission']).filter(status = request.POST['status']).filter(price = float(request.POST['price'])).filter(bhp = int(request.POST['bhp'])).filter(city = get_city(request)).filter(power_source = get_power_source(request)).filter(model = get_car_model(request))
+    # return Car.objects.filter(
+    #     color = request.GET.get('color'),
+    #     year = request.GET.get('year'),
+    #     num_passengers = request.GET.get('num-passengers'),
+    #     transmission = request.GET.get('transmission'),
+    #     status = request.GET.get('status'),
+    #     price = request.GET.get('price'),
+    #     bhp = request.GET.get('bhp', 0),
+    #     city__name = request.GET.get('city'),
+    #     power_source__source = request.GET.get('power-source'),
+    #     model__model = request.GET.get('model')
+    # )
     return Car.objects.filter(
         color = request.POST['color'],
         year = request.POST['year'],
