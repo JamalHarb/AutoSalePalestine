@@ -1,28 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Show car</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     {% load static %}
-    <script src="{% static 'script/script.js' %}"></script>
 </head>
-<body>
-    <p><a href="/my_cars">My Cars</a></p>
-    <p><a href="/car/{{car.id}}/edit">edit</a></p>
-    <p>Manufacturer: {{car.model.manufacturer.manufacturer}}</p>
-    <p>Model: {{car.model.model}}</p>
-    <p>Year: {{car.year}}</p>
-    <p>Color: {{car.color}}</p>
-    <p>City: {{car.city.name}}</p>
-    <p>Number of passengers: {{car.num_passengers}}</p>
-    <p>Status: {{car.status}}</p>
-    <p>Price: {{car.price}}</p>
-    <p>Power Source: {{car.power_source.source}}</p>
-    <p>Transmission: {{car.transmission}}</p>
-    <p>Brake Horsepower: {{car.bhp}}</p>
-    <p>Features: {{car.features}}</p>
-    <p>Photo: <img id="output" alt="{{car.model.model}}"></p>
+<style>
+    img {
+        width: 30%;
+    }
+
+    center img {
+        width: 90%;
+        border-radius: 10%;
+        border: 2px solid #dca33a;
+    }
+
+    .last {
+        overflow: hidden;
+        height: 650px;
+    }
+
+    .last:hover {
+        overflow: scroll;
+        overflow-x: hidden;
+    }
+
+    span {
+        color: gray;
+    }
+</style>
+
+<body style="background-color:#dca33a;">
+    <main>
+        <div class="m-4" style="border:solid 2px black; ">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #f8f9fa;">
+                <div class="container-fluid">
+                    <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
+                        data-bs-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <div class="navbar-nav">
+                            <a href="/dashboard" class="nav-item nav-link active">Home</a>
+                            {%if request.session.first_name %}
+                            <a href="/my_cars" class="nav-item nav-link">My Cars</a>
+                            <a href="/my_request" class="nav-item nav-link">My Requests</a>
+                            {%else%}
+                            <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Cars</a>
+                            <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Requests</a>
+                            {%endif%}
+                            <a href="/contact_us" class="nav-item nav-link">ContactUs</a>
+                            <a href="/about_us" class="nav-item nav-link">AboutUs</a>
+                        </div>
+                        <img src="{% static 'images\logo-removebg-preview.png' %}" class="img-fluid" alt="Logo"
+                            style="width: 10%;margin-left:15%;">
+                        <div class="navbar-nav ms-auto">
+                            {%if request.session.first_name %}
+                            <p class="nav-item nav-link">Welcome, {{request.session.first_name}}</p>
+                            <p><a href="/logout" class="nav-item nav-link">logout</a></p>
+                            {%else%}
+                            <a href="/log/reg" class="nav-item nav-link">Login / Registrations</a>
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div style="display: flex;">
+            <div class="last" style="border:solid 2px black; width:60%;margin-left:2%; background-color: #f8f9fa;"><br>
+                <p class="h3" style="margin-left:5%; font-family:cursive;">{{car.model.manufacturer.manufacturer}}
+                    {{car.model.model}} <span>|</span> {{car.year}}</p>
+                <form style="width: 90%;margin: 0 auto;">
+                    {%if request.session.user_id == car.advertiser.id%}
+                    <div class="alert alert-primary" role="alert">This is one of your cars</div>
+                    <p><a href="/car/{{car.id}}/edit">edit</a></p>
+                    <p><a href="/car/{{car.id}}/posts">Requests</a></p>
+                    {%else%}
+                    <div class="alert alert-primary" role="alert">Are you interested? <a href="/car/{{car.id}}/request">Yes</a> | No</div>
+                    {%endif%}
+                    <center>
+                        <table style="width: 90%;margin: 0 auto;">
+                            <td>
+
+                                <p><span>Status: </span>{{car.status}}</p>
+                                <p><span>Color: </span>{{car.color}}</p>
+                                <p><span>City: </span>{{car.city.name}}</p>
+                                <p><span>Number of passengers: </span>{{car.num_passengers}}</p>
+                            </td>
+                            <td>
+                                <p><span>Price: </span>{{car.price}}</p>
+                                <p><span>Source: </span>{{car.power_source.source}}</p>
+                                <p><span>Transmission: </span>{{car.transmission}}</p>
+                                <p><span>Brake Horsepower: </span>{{car.bhp}}</p>
+                            </td>
+                        </table>
+                        <img src="/images/{{car.photo}}">
+                        <p><span>Features: </span>{{car.features}}</p>
+                    </center>
+                </form>
+            </div>
+            <div class="last" style="border:solid 2px black; width:35%; margin-left:1%; background-color: #f8f9fa"><br>
+                <h4 style="margin-left:3%; font-family:cursive;">Recently added cars</h4>
+                <hr>
+                <center>
+                    <table>
+                        <td>
+                            {% for c in lastCars %}
+                            <tr>
+                                <a href="/car/{{c.id}}/view"><img src="/images/{{c.photo}}"></a>
+                            </tr>
+                            <tr>
+                                <p style="font-family: cursive;">{{c.model.manufacturer.manufacturer}} {{c.model.model}} {{c.year}} | {{c.price}} NIS
+                                </p>
+                            </tr>
+                            <hr>
+                            {%endfor%}
+                        </td>
+                    </table>
+                </center>
+            </div>
+        </div>
+        </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function myFunction() {
+            alert("Hello! You must be logged in to open this page");
+        }
+    </script>
 </body>
+
 </html>

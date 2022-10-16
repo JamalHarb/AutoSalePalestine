@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% load static %}
+</head>
+<style>
+    ::placeholder {
+        color: black;
+        resize: none;
+    }
+
+    textarea {
+        border-radius: 10px;
+    }
+
+    center img {
+        width: 90%;
+        border-radius: 10%;
+        border: 2px solid #dca33a;
+    }
+
+    .last {
+        overflow: hidden;
+        height: 550px;
+    }
+
+    .last:hover {
+        overflow: scroll;
+        overflow-x: hidden;
+    }
+
+    span {
+        color: rgb(192, 192, 192);
+    }
+</style>
+
+<body style="background-color:#dca33a;">
+    <main>
+        <div class="m-4" style="border:solid 2px black; ">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #f8f9fa;">
+                <div class="container-fluid">
+                    <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
+                        data-bs-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <div class="navbar-nav">
+                            <a href="/dashboard" class="nav-item nav-link active">Home</a>
+                            {%if request.session.first_name %}
+                            <a href="/my_cars" class="nav-item nav-link">My Cars</a>
+                            <a href="/my_request" class="nav-item nav-link">My Requests</a>
+                            {%else%}
+                            <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Cars</a>
+                            <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Requests</a>
+                            {%endif%}
+                            <a href="/contact_us" class="nav-item nav-link">ContactUs</a>
+                            <a href="/about_us" class="nav-item nav-link">AboutUs</a>
+                        </div>
+                        <img src="{% static 'images\logo-removebg-preview.png' %}" class="img-fluid" alt="Logo"
+                            style="width: 10%; margin-left:15%;">
+                        <div class="navbar-nav ms-auto">
+                            {%if request.session.first_name %}
+                            <p class="nav-item nav-link">Welcome, {{request.session.first_name}}</p>
+                            <p><a href="/logout" class="nav-item nav-link">logout</a></p>
+                            {%else%}
+                            <a href="/log/reg" class="nav-item nav-link">Login / Registrations</a>
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div style="display:flex;">
+            <div class="last"
+                style="border:solid 2px black; width:60%;height:550px;margin-left:2%; background-color: #f8f9fa;"><br>
+                <form style="width: 70%;">
+                    <p class="h4" style="margin-left:8%; font-family:cursive;">Request for
+                        {{car.model.manufacturer.manufacturer}} {{car.model.model}}</p>
+                    <p class="h4" style="margin-left:8%; font-family:cursive;">{{car.advertiser.first_name}}
+                        {{car.advertiser.last_name}}</p>
+                </form><br>
+                <div class="form-floating" style="margin-left:5%;">
+                    {%if request.session.user_id == car.advertiser.id%}
+                    <p class="h5" style="font-family:cursive;">Requests of your car</p>
+                    {%else%}
+                    <p class="h5" style="font-family:cursive;">Your requests</p>
+                    {%endif%}
+                    <div>
+                        {%for post in posts%}
+                        <form action="/deleteRequest/{{post.id}}" method="post">
+                            {%csrf_token%}
+                            <div style="display: flex;">
+                                <button class="btn btn-outline-danger">delete</button>
+                                <ul>{{post.user.first_name}} {{post.user.last_name}}</ul>
+                                <li class="h5" style="margin-left:8%;font-family:cursive;">{{post.request}}</li>
+                                {{comm.request.request}}
+                            </div>
+                            {%for co in comm%}
+                            <form action="/deleteComment/{{co.id}}" method="post">
+                                {%csrf_token%}
+                                {%if co.request.id == post.id%}
+                                <input type="hidden" name="c_id" value="{{car.id}}">
+                                <p class="h5" style="margin-left:10%; margin-top:4%; font-family:cursive;">
+                                    <span>{{co.user.first_name}} {{co.user.last_name}} >> </span>{{co.reply}}</p>
+                                    {%if co.user.id == request.session.user_id%}
+                                <button class="btn btn-outline-danger">delete</button>
+                                {%endif%}
+                                {%endif%}   
+                            </form>
+                            {%endfor%}
+                        </form>
+                        <form action="/comment/{{post.id}}" method="post">
+                            {%csrf_token%}
+                            <input type="hidden" name="c_id" value="{{car.id}}">
+                            <div class="form-floating" style="margin-top:2%; margin-left:7%;">
+                                <textarea name="comment" placeholder="Leave a comment here" id="floatingTextarea"
+                                    style="width:50%; height:120px; resize:none;"></textarea>
+                                <label for="floatingTextarea" style="font-family:cursive;"></label>
+                                <p><button class="btn btn-outline-danger"style="">POST</button></p>
+                            </div>
+                        </form>
+                        {%endfor%}
+                        {%if request.session.user_id == car.advertiser.id%}
+                        {%for p in post1%}
+                        <ul>{{p.user.first_name}} {{p.user.last_name}}</ul>
+                        <li class="h5" style="margin-left:8%;font-family:cursive;">{{p.request}}</li>
+                        {%for co in comm%}
+                        {%if co.request.id == p.id%}
+                        <p class="h5" style="margin-left:10%; margin-top:4%; font-family:cursive;">
+                            <span>{{co.user.first_name}} {{co.user.last_name}} << </span>{{co.reply}}</p>
+                            {%if co.user.id == request.session.user_id%}
+                                <button class="btn btn-outline-danger">delete</button>
+                                {%endif%}
+                        {%endif%}
+                        {%endfor%}
+                        <form action="/comment/{{p.id}}" method="post">
+                            {%csrf_token%}
+                            <input type="hidden" name="c_id" value="{{car.id}}">
+                            <div class="form-floating" style="margin-top:2%; margin-left:7%;">
+                                <textarea name="comment"  placeholder="Leave a comment here"
+                                    id="floatingTextarea" style="width:50%; height:120px;"></textarea>
+                                <label for="floatingTextarea" style="font-family:cursive;"></label>
+                                <button class="btn btn-outline-danger"
+                                    style="margin-top:3%; margin-left:40%;">POST</button>
+                            </div>
+                        </form>
+                        <hr>
+                        {%endfor%}
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+            <div class="last" style="border:solid 2px black; width:35%; margin-left:1%; background-color: #f8f9fa"><br>
+                <h4 style="margin-left:3%; font-family:cursive;">Recently added cars</h4>
+                <hr>
+                <center>
+                    <table>
+                        <td>
+                            {% for c in lastCars %}
+                            <tr>
+                                <a href="/car/{{c.id}}/view"><img src="/images/{{c.photo}}"></a>
+                            </tr>
+                            <tr>
+                                <p style="font-family: cursive;">{{c.model.manufacturer.manufacturer}} {{c.model.model}}
+                                    {{c.year}} | {{c.price}} NIS
+                                </p>
+                            </tr>
+                            <hr>
+                            {%endfor%}
+                        </td>
+                    </table>
+                </center>
+            </div>
+        </div>
+    </main>
+    <script>
+        function myFunction() {
+            alert("Hello! You must be logged in to open this page");
+        }
+    </script>
+</body>
+
+</html>

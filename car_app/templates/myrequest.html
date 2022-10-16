@@ -21,7 +21,7 @@
 
     .last {
         overflow: hidden;
-        height: 550px;
+        height: 650px;
     }
 
     .last:hover {
@@ -29,10 +29,9 @@
         overflow-x: hidden;
     }
 </style>
-
 <body style="background-color:#dca33a;">
     <main>
-        <div class="m-4" style="border:solid 2px black;">
+        <div class="m-4" style="border:solid 2px black; ">
             <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #f8f9fa;">
                 <div class="container-fluid">
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
@@ -44,7 +43,7 @@
                             <a href="/dashboard" class="nav-item nav-link active">Home</a>
                             {%if request.session.first_name %}
                             <a href="/my_cars" class="nav-item nav-link">My Cars</a>
-                            <a href="my_request" class="nav-item nav-link">My Requests</a>
+                            <a href="/my_request" class="nav-item nav-link">My Requests</a>
                             {%else%}
                             <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Cars</a>
                             <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Requests</a>
@@ -67,30 +66,28 @@
             </nav>
         </div>
         <div style="display:flex;">
-            <div class="last"
-                style="border:solid 2px black; width:60%;height:550px;margin-left:2%;background-color:#f8f9fa;"><br>
-                <div style="width: 70%;">
-                    <p class="h3" style="margin-left:55%; font-family:cursive;">My Cars</p>
-                </div>
-                <a href="/add_car" style="margin-left: 5%;">Add Car</a>
+            <div class="last" style="border:solid 2px black; width:60%;margin-left:2%; background-color: #f8f9fa;"><br>
+                <form style="width: 70%;">
+                    <p class="h3" style="margin-left:55%; font-family:cursive;" ;>My Requests</p>
+                </form>
                 <table class="table table-bordered postTable" style="margin-top:15%; margin-left:15%; width:70%;">
                     <tr>
                         <th class="table-light" style="font-family:cursive;">Car</th>
+                        <th class="table-light" style="font-family:cursive;">Seller</th>
                         <th class="table-light" style="font-family:cursive;">Actions</th>
                     </tr>
-                    {% for car in cars %}
+                    {%for req in myreq%}
                     <tr class="post-{{car.id}}">
-                        <td class="table-light" style="font-family:cursive;">{{car.model.manufacturer.manufacturer}}
-                            {{car.model.model}}</td>
-                        <td class="table-light">
-                            <a href="/car/{{car.id}}/view">view</a> | <a data-id={{car.id}} class="a12"
-                                href="/deleteCar/{{car.id}}">delete</a>
+                        <td class="table-light" style="font-family:cursive;">{{req.car.model.model}}</td>
+                        <td class="table-light" style="font-family:cursive;">{{req.car.advertiser.first_name}}
+                            {{req.car.advertiser.last_name}}</td>
+                        <td class="table-light" style="font-family:cursive;">
+                            <a href="/car/{{req.car.id}}/posts">view</a> | <a data-id={{car.id}} class="a12"
+                                href="/deleteRequest/{{req.id}}">delete</a>
                         </td>
                     </tr>
-
-                    {% endfor %}
+                    {%endfor%}
                 </table>
-
             </div>
             <div class="last" style="border:solid 2px black; width:35%; margin-left:1%; background-color: #f8f9fa"><br>
                 <h4 style="margin-left:3%; font-family:cursive;">Recently added cars</h4>
@@ -112,7 +109,7 @@
                     </table>
                 </center>
             </div>
-        </div>
+    </div>
     </main>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>

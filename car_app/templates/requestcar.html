@@ -13,6 +13,10 @@
     {% load static %}
 </head>
 <style>
+    img {
+        width: 30%;
+    }
+
     center img {
         width: 90%;
         border-radius: 10%;
@@ -21,18 +25,24 @@
 
     .last {
         overflow: hidden;
-        height: 550px;
+        height: 650px;
     }
 
     .last:hover {
         overflow: scroll;
         overflow-x: hidden;
     }
-</style>
 
+    span {
+        color: gray;
+    }
+    ::placeholder{
+        color: white;
+    }
+</style>
 <body style="background-color:#dca33a;">
     <main>
-        <div class="m-4" style="border:solid 2px black;">
+        <div class="m-4" style="border:solid 2px black; ">
             <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #f8f9fa;">
                 <div class="container-fluid">
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
@@ -44,7 +54,7 @@
                             <a href="/dashboard" class="nav-item nav-link active">Home</a>
                             {%if request.session.first_name %}
                             <a href="/my_cars" class="nav-item nav-link">My Cars</a>
-                            <a href="my_request" class="nav-item nav-link">My Requests</a>
+                            <a href="/my_request" class="nav-item nav-link">My Requests</a>
                             {%else%}
                             <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Cars</a>
                             <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Requests</a>
@@ -53,7 +63,7 @@
                             <a href="/about_us" class="nav-item nav-link">AboutUs</a>
                         </div>
                         <img src="{% static 'images\logo-removebg-preview.png' %}" class="img-fluid" alt="Logo"
-                            style="width: 10%; margin-left:15%;">
+                            style="width: 10%;margin-left:15%;">
                         <div class="navbar-nav ms-auto">
                             {%if request.session.first_name %}
                             <p class="nav-item nav-link">Welcome, {{request.session.first_name}}</p>
@@ -67,30 +77,33 @@
             </nav>
         </div>
         <div style="display:flex;">
-            <div class="last"
-                style="border:solid 2px black; width:60%;height:550px;margin-left:2%;background-color:#f8f9fa;"><br>
-                <div style="width: 70%;">
-                    <p class="h3" style="margin-left:55%; font-family:cursive;">My Cars</p>
+            <div class="last" style="border:solid 2px black; width:60%;margin-left:2%; background-color: #f8f9fa;"><br>
+                <form style="width: 70%;margin: 0 auto;">
+                    <p class="h3" style="font-family:cursive;">Request a Car</p>
+                    <center>
+                    <img src="/images/{{car.photo}}" style="margin-top:3%;width:100%;">
+                    <p class="h4" style="margin-left:8%; font-family:cursive;text-align:start;">{{car.model.manufacturer.manufacturer}} {{car.model.model}}</p>
+                    <p class="h4" style="margin-left:8%; font-family:cursive;text-align:start;">{{car.advertiser.first_name}} {{car.advertiser.last_name}}</p>
+                </form>
+                <div>
+                    {%if request.session.first_name %}
+                    <form action="/post/{{car.id}}" method="post">
+                        {%csrf_token%}
+                        <textarea name="post" class="btn btn-secondary dropdown-toggle" placeholder="Leave a comment here" id="floatingTextarea"
+                        style="width:100%;resize:none;text-align:start;" cols="30" rows="5"></textarea>
+                        <button class="btn btn-outline-danger"
+                        style="margin-top:3%;width:100%;">POST</button>
+                        {%else%}
+                        <form action="/log/reg" method="post">
+                            {%csrf_token%}
+                            <textarea name="post" class="btn btn-secondary dropdown-toggle" placeholder="Leave a comment here" id="floatingTextarea"
+                            style="width:100%;resize:none;text-align:start;" cols="30" rows="5"></textarea>
+                            <button onclick="myFunction()" class="btn btn-outline-danger"
+                            style="margin-top:3%;width:100%;">POST</button>
+                        {%endif%}
+                    </form>
                 </div>
-                <a href="/add_car" style="margin-left: 5%;">Add Car</a>
-                <table class="table table-bordered postTable" style="margin-top:15%; margin-left:15%; width:70%;">
-                    <tr>
-                        <th class="table-light" style="font-family:cursive;">Car</th>
-                        <th class="table-light" style="font-family:cursive;">Actions</th>
-                    </tr>
-                    {% for car in cars %}
-                    <tr class="post-{{car.id}}">
-                        <td class="table-light" style="font-family:cursive;">{{car.model.manufacturer.manufacturer}}
-                            {{car.model.model}}</td>
-                        <td class="table-light">
-                            <a href="/car/{{car.id}}/view">view</a> | <a data-id={{car.id}} class="a12"
-                                href="/deleteCar/{{car.id}}">delete</a>
-                        </td>
-                    </tr>
-
-                    {% endfor %}
-                </table>
-
+            </center>
             </div>
             <div class="last" style="border:solid 2px black; width:35%; margin-left:1%; background-color: #f8f9fa"><br>
                 <h4 style="margin-left:3%; font-family:cursive;">Recently added cars</h4>
@@ -114,40 +127,10 @@
             </div>
         </div>
     </main>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         function myFunction() {
             alert("Hello! You must be logged in to open this page");
         }
-    </script>
-    <script>
-
-        $(document).ready(function () {
-
-            $("body").on("click", ".a12", function (e) {
-
-
-
-
-                var id = $(this).data("id");
-
-                $.ajax({
-                    url: "deleteCar/" + id,
-                    type: 'DELETE',
-                    dataType: 'json',
-                    headers: {
-                        "X-CSRFTOKEN": "{{ csrf_token }}"
-                    },
-                    data: {
-                        id: id //id for button
-                    },
-                    success: function (response) {
-                        $(".postTable .post-" + id).remove();
-                    }
-                });
-                return false;
-            });
-        });
     </script>
 </body>
 

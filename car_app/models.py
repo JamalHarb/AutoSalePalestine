@@ -1,3 +1,4 @@
+from distutils.command.upload import upload
 from tkinter.tix import Tree
 from django.db import models
 import re
@@ -8,6 +9,12 @@ from django.contrib import messages
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
+
+class Colors(models.Model):
+    color_name = models.CharField(max_length = 45)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 class CityManager(models.Manager):
     def city_validator(self, postData):
         errors = {}
@@ -114,25 +121,56 @@ class CarModel(models.Model):
 class CarManager(models.Manager):
     def car_validator(self, postData):
         errors = {}
-        if postData['color'] == 'None':
+        if not postData['color']:
             errors['color'] = 'Choose color'
-        if postData['year'] == 'None':
+        if not postData['year']:
             errors['year'] = 'Choose year'
-        elif postData['year'] < datetime.today().year-120:
+        elif int(postData['year']) < datetime.today().year-120:
             errors['year'] = 'Year cannot be earlier than 120 years ago'
-        elif postData['year'] > datetime.today().year + 1:
+        elif int(postData['year']) > datetime.today().year + 1:
             errors['year'] = f'Year cannot be later than {datetime.today().year + 1}'
-        if postData['num-passengers'] == 'None':
+        if not postData['num-passengers']:
             errors['num_passengers'] = 'Choose number of passengers'
-        if postData['transmission'] == 'None':
+        if not postData['transmission']:
             errors['transmission'] = 'Choose transmission'
-        if postData['status'] == 'None':
+        if not postData['status']:
             errors['status'] = 'Choose status'
-        if len(postData['price']) < 1:
+        if not postData['price']:
             errors['price'] = 'Specify price'
-        errors['city'] = City.objects.city_validator(postData)['city']
-        errors['power_source'] = PowerSource.objects.power_source_validator(postData)
-        errors['car_model'] = CarModel.objects.car_model_validator(postData)
+        if not postData['photo']:
+            errors['photo'] = 'Select photo'
+        if not postData['city']:
+            errors['city'] = 'Choose city'
+        if not postData['power-source']:
+            errors['power_source'] = 'Choose power source'
+        if not postData['model']:
+            errors['car_model'] = 'Choose car model'
+        return errors
+    def car_validator_without_image(self, postData):
+        errors = {}
+        if not postData['color']:
+            errors['color'] = 'Choose color'
+        if not postData['year']:
+            errors['year'] = 'Choose year'
+        elif int(postData['year']) < datetime.today().year-120:
+            errors['year'] = 'Year cannot be earlier than 120 years ago'
+        elif int(postData['year']) > datetime.today().year + 1:
+            errors['year'] = f'Year cannot be later than {datetime.today().year + 1}'
+        if not postData['num-passengers']:
+            errors['num_passengers'] = 'Choose number of passengers'
+        if not postData['transmission']:
+            errors['transmission'] = 'Choose transmission'
+        if not postData['status']:
+            errors['status'] = 'Choose status'
+        if not postData['price']:
+            errors['price'] = 'Specify price'
+        if not postData['city']:
+            errors['city'] = 'Choose city'
+        if not postData['power-source']:
+            errors['power_source'] = 'Choose power source'
+        if not postData['model']:
+            errors['car_model'] = 'Choose car model'
+        
         return errors
 
 class Car(models.Model):
@@ -141,10 +179,10 @@ class Car(models.Model):
     num_passengers = models.IntegerField(validators=[MinValueValidator(1)], null=True)
     transmission = models.CharField(max_length=9, null=True)
     status = models.CharField(max_length=4, null=True)
-    price = models.DecimalField(decimal_places=2, max_digits=8, null=True)
+    price = models.IntegerField(validators=[MinValueValidator(1)], null=True)
     bhp = models.IntegerField(null=True)
     features = models.TextField(null=True)
-    photo = models.CharField(max_length=255, null=True)
+    photo = models.ImageField(upload_to='images', null=True, blank = True)
     is_sold = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -167,7 +205,7 @@ class Request(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     objects = RequestManager()
     user = models.ForeignKey(User, related_name='requests', on_delete=models.CASCADE)
-    car = models.ForeignKey(Car, related_name='requests', on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, related_name='requests', on_delete=models.CASCADE , null=True)
 
 class ReplyManager(models.Manager):
     def reply_validator(postData):
@@ -182,6 +220,8 @@ class Reply(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     objects = ReplyManager()
     request = models.ForeignKey(Request, related_name='replies', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='replies', on_delete=models.CASCADE)
+
 
 def create_cities():
     cities = ['Jenin', 'Tulkarm', 'Tubas', 'Nablus', 'Qalqilyah', 'Jericho', 'Salfit', 'Ramallah', 'Jerusalem', 'Bethlehem', 'Hebron', 'Gaza Strip']
@@ -211,7 +251,7 @@ def register(request):
     pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     city_name = request.POST['city']
     city = City.objects.get(name=city_name)
-    User.objects.create(
+    user = User.objects.create(
         first_name = request.POST['first-name'],
         last_name = request.POST['last-name'],
         birthday = request.POST['bday'],
@@ -221,6 +261,7 @@ def register(request):
     )
     request.session['first_name'] = request.POST['first-name']
     request.session['email'] = request.POST['email']
+    request.session['user_id'] = user.id
 
 def login_errors(request):
     return User.objects.login_validator(request.POST)
@@ -230,6 +271,7 @@ def login(request):
     logged_user = user[0]
     request.session['first_name'] = logged_user.first_name
     request.session['email'] = request.POST['email']
+    request.session['user_id'] = logged_user.id
 
 def get_logged_user(request):
     return User.objects.get(email=request.session['email'])
@@ -261,6 +303,10 @@ def get_power_source(requset):
     source = requset.POST['power-source']
     return PowerSource.objects.get(source=source)
 
+
+def car_errors_without_image(request):
+    return Car.objects.car_validator_without_image(request.POST)
+
 def create_car(request):
     color = request.POST['color']
     year = request.POST['year']
@@ -270,7 +316,7 @@ def create_car(request):
     price = request.POST['price']
     bhp = request.POST['bhp']
     features = request.POST['features']
-    photo = request.POST['photo']
+    photo = request.FILES['photo']
     advertiser = get_logged_user(request)
     city = get_city(request)
     power_source = get_power_source(request)
@@ -305,27 +351,45 @@ def update_car(request, id):
     car.price = request.POST['price']
     car.bhp = request.POST['bhp']
     car.features = request.POST['features']
-    car.photo = request.POST['photo']
+    if 'photo' in request.FILES and request.FILES['photo']:
+        car.photo = request.FILES['photo']
     car.city = get_city(request)
     car.power_source = get_power_source(request)
     car.model = get_car_model(request)
     car.save()
 
 def get_searched_cars(request):
-    user = get_logged_user(request)
-    # return Car.objects.filter(color = request.POST['color']).filter(year = int(request.POST['year'])).filter(num_passengers = int(request.POST['num-passengers'])).filter(transmission = request.POST['transmission']).filter(status = request.POST['status']).filter(price = float(request.POST['price'])).filter(bhp = int(request.POST['bhp'])).filter(city = get_city(request)).filter(power_source = get_power_source(request)).filter(model = get_car_model(request))
-    return Car.objects.filter(
-        color = request.POST['color'],
-        year = request.POST['year'],
-        num_passengers = request.POST['num-passengers'],
-        transmission = request.POST['transmission'],
-        status = request.POST['status'],
-        price = request.POST['price'],
-        bhp = request.POST['bhp'],
-        city = get_city(request),
-        power_source = get_power_source(request),
-        model = get_car_model(request)
-    )
+    query = {}
+    if request.POST['manufacturer']:
+        query['model__manufacturer__manufacturer'] = request.POST['manufacturer']
+    if request.POST['model']:
+        query['model__model'] = request.POST['model']
+    if request.POST['city']:
+        query['city__name'] = request.POST['city']
+    if request.POST['power_source']:
+        query['power_source__source'] = request.POST['power_source']
+    if request.POST['color']:
+        query['color'] = request.POST['color']
+    if request.POST['min_year']:
+        query['year__gte'] = request.POST['min_year']
+    if request.POST['max_year']:
+        query['year__lte'] = request.POST['max_year']
+    if request.POST['num_passengers']:
+        query['num_passengers'] = request.POST['num_passengers']
+    if request.POST['transmission']:
+        query['transmission'] = request.POST['transmission']
+    if request.POST['status']:
+        query['status'] = request.POST['status']
+    if request.POST['min_price']:
+        query['price__gte'] = request.POST['min_price']
+    if request.POST['max_price']:
+        query['price__lte'] = request.POST['max_price']
+    if request.POST['min_bhp']:
+        query['bhp__gte'] = request.POST['min_bhp']
+    if request.POST['max_bhp']:
+        query['bhp__lte'] = request.POST['max_bhp']
+    return Car.objects.filter(**query)
+
 
 def year_limits():
     min_year = datetime.today().year-120

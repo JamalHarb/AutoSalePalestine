@@ -5,83 +5,112 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Registration</title>
-    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+        {% load static %}
     <link rel="stylesheet" href="{% static 'login_style.css' %}">
 </head>
-<body>
-    <div class="container">
-        <div class="registration">
-            <p class="top">Registration</p>
-            <form action="/check_register" method="post">
-                {% csrf_token %}
+<body style="background-color: #f8f9fa; display: flex; flex-direction: column; align-items: center;">
+    <div>
+        <img src="{% static 'images\logo-removebg-preview.png' %}" alt="Logo" style="width: 70%; margin:0 auto;">
+    </div>
+    <main style="width: 100% ;display: flex; justify-content: space-around; align-items: center;">
+        <div class="reg" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <h1>Registration</h1>
+            <form action="/check_register" method="post" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    {% csrf_token %}
                 <table>
-                    <tr class="row">
-                        <td>First Name</td>
-                        <td><input type="text" name="first-name"></td>
-                    </tr>
                     <tr>
-                        <td>Last Name</td>
-                        <td><input type="text" name="last-name"></td>
-                    </tr>
-                    <tr>
-                        <td>Birthday</td>
-                        <td><input type="date" name="bday"></td>
-                    </tr>
-                    <tr>
-                        <td>City</td>
+                        <td style="width: 5%;">
+                            <label>First Name:</label>
+                        </td>
                         <td>
-                            <select name="city">
+                            <input class="btn btn-secondary dropdown-toggle"style="width:60%;margin-left:10%;margin-bottom:1%;" type="text" name="first-name">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 5%;">
+                            <label>Last Name:</label>
+                        </td>
+                        <td>
+                            <input class="btn btn-secondary dropdown-toggle"style="width:60%;margin-left:10%;margin-bottom:1%;" type="text" name="last-name" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 5%;">Birthday</td>
+                        <td><input class="btn btn-secondary dropdown-toggle" style="width:60%;margin-left:10%;margin-bottom:1%;" type="date" name="bday"></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 5%;">City</td>
+                        <td>
+                            <select class="btn btn-secondary dropdown-toggle"style="width:60%;margin-left:10%;margin-bottom:1%;" name="city">
                                 <option value="None" selected>select city</option>
                                 {% for city in cities %}
-                                    <option value="{{city.name}}">{{city.name}}</option>
+                                <option value="{{city.name}}">{{city.name}}</option>
                                 {% endfor %}
                             </select>
                         </td>
                     </tr>
                     <tr>
-                        <td>Email</td>
-                        <td><input type="email" name="email"></td>
+                        <td style="width: 5%;">
+                            <label>Email: </label>
+                        </td>
+                        <td>
+                            <input class="btn btn-secondary dropdown-toggle" style="width:60%;margin-left:10%;margin-bottom:1%;" type="email" name="email">
+                        </td>
                     </tr>
                     <tr>
-                        <td>Password</td>
-                        <td><input type="password" name="password"></td>
+                        <td style="width: 5%;"><label>Password:</label></td>
+                        <td><input class="btn btn-secondary dropdown-toggle" style="width:60%;margin-left:10%;margin-bottom:1%;" type="password" name="password"></td>
                     </tr>
                     <tr>
-                        <td>Confirm Password</td>
-                        <td><input type="password" name="confirm-password"></td>
+                        <td style="width: 15%;"><label>Confirm Password:</label></td>
+                        <td><input class="btn btn-secondary dropdown-toggle" style="width:60%;margin-left:10%;margin-bottom:1%;" type="password" name="confirm-password"></td>
                     </tr>
                 </table>
                 <input type="hidden" name="which-btn" value="register">
-                <input class="btn" type="submit" value="Register">
+                <input  class="btn" type="submit" value="Register" style="background-color:#dca33a; color:#f8f9fa;">
             </form>
-        </div>
-        <div class="login">
-            <p class="top">Login</p>
-            <form action="/check_login" method="post">
+            
+        </div> 
+        
+    
+        
+        <!-- LOG IN -->
+        <div class="login" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <h1>Login</h1>
+            <form action="/check_login" method="post" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 {% csrf_token %}
                 <table>
                     <tr>
-                        <td>Email</td>
-                        <td><input type="email" name="email"></td>
+                        <td style="width: 1%;"><label>Email:</label></td>
+                        <td><input class="btn btn-secondary dropdown-toggle" style="width:60%;margin-left:10%;margin-bottom:1%;" type="email" name="email"></td>
                     </tr>
                     <tr>
-                        <td>Password</td>
-                        <td><input type="password" name="password"></td>
+                        <td style="width: 1%;"><label>Password:</label></td>
+                        <td><input class="btn btn-secondary dropdown-toggle" style="width:60%;margin-left:10%;margin-bottom:1%;" type="password" name="password"></td>
                     </tr>
                 </table>
                 <input type="hidden" name="which-btn" value="login">
-                <input class="btn" type="submit" value="Log In">
+                <input class="btn" type="submit" value="Log In" style="background-color:#dca33a; color:#f8f9fa;">
             </form>
         </div>
-    </div>
+    </main>
     <div class="messages">
         {% if messages %}
-            <ul class="messages">    
-            {% for message in messages %}    
-                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>    
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
             {% endfor %}
-            </ul>
+        </ul>
         {% endif %}
     </div>
 </body>
 </html>
+
+
+
+
+
+

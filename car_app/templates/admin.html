@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}
+    <script src="{% static 'script/scrip.js' %}"></script>
+    <style>
+        p {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        th,
+        td {
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/dashboard">Dashboard</a><br><br>
+    <center>
+        <p style="text-align: center;">Administrator table to add data</p>
+        <table border="1">
+            <th>
+                <form action="/addColor" method="post">
+                    {%csrf_token%}
+                    <label>Color name: </label>
+                    <input type="text" name="color">
+                    <button>add</button>
+                </form>
+            </th>
+            <th>
+                <form action="/addCity" method="post">
+                    {%csrf_token%}
+                    <label>City name: </label>
+                    <input type="text" name="city">
+                    <button>add</button>
+                </form>
+            </th>
+            <th>
+                <form action="/addManufacturer" method="post">
+                    {%csrf_token%}
+                    <label>Manufacturer name: </label>
+                    <input type="text" name="Manufacturer">
+                    <button>add</button>
+                </form>
+            </th>
+            <th>
+                <form action="/addModel" method="post">
+                    {%csrf_token%}
+                    <label>Model name: </label>
+                    <input type="text" name="Model">
+                    <select name="Manufacturer">
+                        {%for m in Manufacturer%}
+                        <option value="{{m.id}}">{{m.manufacturer}}</option>
+                        {%endfor%}
+                    </select>
+                    <button>add</button>
+                </form>
+            </th>
+            <th>
+                <form action="/addPs" method="post">
+                    {%csrf_token%}
+                    <label>Power Source name: </label>
+                    <input type="text" name="PowerSource">
+                    <button>add</button>
+                </form>
+            </th>
+            <tr >
+                <td class="postTable">
+                    {%for co in color reversed%}
+                    <ul>
+                        
+                        <li class="post-{{co.id}}">{% csrf_token %}{{co.color_name}} <a data-id={{co.id}} class="a12" href="/deleteColor/{{co.id}}">delete</a></li>
+                    </ul>
+                    {%endfor%}
+                </td>
+                <td>
+                    {%for c in cities reversed%}
+                    <ul>
+                        <li>{{c.name}} <a href="/deleteCity/{{c.id}}">delete</a></li>
+                    </ul>
+                    {%endfor%}
+                </td>
+                <td>
+                    {%for M in Manufacturer reversed%}
+                    <ul>
+                        <li>{{M.manufacturer}} <a href="/deleteManufacturer/{{M.id}}">delete</a></li>
+                    </ul>
+                    {%endfor%}
+                </td>
+                <td class="postTable">
+                    {%for M in Manufacturer reversed%}
+                    <p>{{M.manufacturer}}</p>
+                    {%for m in model reversed%}
+                    {%if m.manufacturer == M%}
+                    <ul>
+                        <li class="post-{{m.id}}">{% csrf_token %}{{m.model}} <a data-id={{m.id}} class="a11" href="/deleteModel/{{m.id}}">delete</a></li>
+                    </ul>
+                    {%endif%}
+                    {%endfor%}
+                    {%endfor%}
+                </td>
+                <td>
+                    {%for s in Ps reversed%}
+                    <ul>
+                        <li>{{s.source}} <a  href="/deletePs/{{s.id}}">delete</a></li>
+                    </ul>
+                    {%endfor%}
+                </td>
+        </table>
+        <p>Users Number: {{users.count}}</p>
+    </center>
+
+    <button onclick="myFunction(this)">Click me!</button>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            $("body").on("click", ".a12",function (e) {
+
+                if (!confirm("Do you really want to do this?")) {
+                    return false;
+                }
+
+
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: "deleteColor/" + id,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    headers: {
+                        "X-CSRFTOKEN": "{{ csrf_token }}"
+                    },
+                    data: {
+                        id: id //id for button
+                    },
+                    success: function (response) {
+                        $(".postTable .post-" + id).remove();
+                    }
+                });
+                return false;
+            });
+        });
+        $(document).ready(function () {
+
+            $("body").on("click", ".a11",function (e) {
+
+                if (!confirm("Do you really want to do this?")) {
+                    return false;
+                }
+
+
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: "deleteModel/" + id,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    headers: {
+                        "X-CSRFTOKEN": "{{ csrf_token }}"
+                    },
+                    data: {
+                        id: id //id for button
+                    },
+                    success: function (response) {
+                        $(".postTable .post-" + id).remove();
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</body>
+
+</html>

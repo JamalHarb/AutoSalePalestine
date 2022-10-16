@@ -1,62 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Main</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% load static %}
 </head>
-<body>
-    <p>Welcome, {{request.session.first_name}}</p>
-    <a href="/logout">logout</a>
-    <h1>Dashboard</h1>
-    <p><a href="/my_cars">My Cars</a> | <a href="/my_requests">My Requests</a></p><br><br>
-    <form action="/car/search" method="post">
-        {% csrf_token %}
-        Manufacturer: <select name="manufacturer">
-            <option value="None" selected>select manufacturer</option>
-            {% for manufacturer in manufacturers %}
-                <option value="{{manufacturer.manufacturer}}">{{manufacturer.manufacturer}}</option>
-            {% endfor %}
-        </select>
-        Model: <select name="model">
-            <option value="None" selected>select model</option>
-            {% for model in models %}
-                <option value="{{model.model}}">{{model.model}}</option>
-            {% endfor %}
-        </select>
-        <p>Year: <input name="year" type="number" min="{{min_year}}" max="{{max_year}}"></p>
-        <p>Color: <input type="text" name="color"></p>
-        <p>City: <select name="city">
-            <option value="None" selected>select city</option>
-            {% for city in cities %}
-                <option value="{{city.name}}">{{city.name}}</option>
-            {% endfor %}
-            </select>
-        </p>
-        <p>Number of passengers: <input type="number" min="1" max="10" name="num-passengers"></p>
-        <p>Status: <input type="text" name="status"></p>
-        <p>Price: <input type="number" name="price"></p>
-        <p>Power Source: <select name="power-source">
-            <option value="None" selected>select power source</option>
-            {% for source in sources %}
-                <option value="{{source.source}}">{{source.source}}</option>
-            {% endfor %}
-            </select></p>
-        <p>Transmission: <input type="text" name="transmission"></p>
-        <p>Brake Horsepower: <input type="number" name="bhp"></p>
-        <input type="submit" value="Search">
-    </form><br><br><br>
-    <div class="search-results" style="border: 2px solid black;">
-        {% if cars %}
-        <p>success</p>
-            {% for car in cars %}
-                <p>{{car}} {{car}}</p>
-            {% endfor %}
-        {% endif %}
-    </div>
-    {% for c in lastCars %}
-    <p>{{c.model.model}}</p>
-    {%endfor%}
+<style>
+    ::placeholder {
+        color: white;
+        opacity: 1;
+    }
+    center img {
+        width: 90%;
+        border-radius: 10%;
+        border: 2px solid #dca33a;
+    }
+
+    .last {
+        overflow: hidden;
+        height: 650px;
+    }
+
+    .last:hover {
+        overflow: scroll;
+        overflow-x: hidden;
+    }
+</style>
+
+<body style="background-color:#dca33a;">
+    <main>
+        <div class="m-4" style="border:solid 2px black; ">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #e7e0e0;">
+                <div class="container-fluid">
+                    <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
+                        data-bs-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <div class="navbar-nav">
+                            <a href="/dashboard" class="nav-item nav-link active">Home</a>
+                            {%if request.session.first_name %}
+                            <a href="/my_cars" class="nav-item nav-link">My Cars</a>
+                            <a href="my_request" class="nav-item nav-link">My Requests</a>
+                            {%else%}
+                            <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Cars</a>
+                            <a href="/log/reg" onclick="myFunction()" class="nav-item nav-link">My Requests</a>
+                            {%endif%}
+                            <a href="/contact_us" class="nav-item nav-link">ContactUs</a>
+                            <a href="/about_us" class="nav-item nav-link">AboutUs</a>
+                        </div>
+                        <img src="{% static 'images\logo-removebg-preview.png' %}" class="img-fluid" alt="Logo"
+                            style="width: 10%;margin-left:15%;">
+                        <div class="navbar-nav ms-auto">
+                            {%if request.session.first_name %}
+                            <p class="nav-item nav-link">Welcome, {{request.session.first_name}}</p>
+                            <p><a href="/logout" class="nav-item nav-link">logout</a></p>
+                            {%else%}
+                            <a href="/log/reg" class="nav-item nav-link">Login / Registrations</a>
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div style="display:flex;">
+            <div class="select"
+                style="border:solid 2px black; width:60%;height:650px;margin-left:2%; background-color: #f8f9fa;">
+                
+                <form action="/car/search" method="post" class="mainform" style="width: 90%; margin:0 auto;">
+                    {% csrf_token %}
+                    <h4 style="margin-left:1%;font-family:cursive;margin-top:5%;">What are you looking for?</h4>
+                    <samp class="sec" style="margin:1%;font-family:cursive;">Filters</samp><br>
+                    <p style="display: flex; margin-top: 1%;"><select name="manufacturer" class="btn btn-secondary dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            style="width:40%; margin-left:1%;margin-bottom:0%;">
+                            <option value="" selected>select manufacturer</option>
+                            {% for manufacturer in manufacturers %}
+                            <option value="{{manufacturer.manufacturer}}">{{manufacturer.manufacturer}}</option>
+                            {% endfor %}
+                        </select>
+                        <select name="model" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"
+                            style="width:40%;margin-left:1%;margin-bottom:0%;">
+                            <option value="" selected>select model</option>
+                            {% for model in models %}
+                            <option value="{{model.model}}">{{model.model}}</option>
+                            {% endfor %}
+                        </select>
+                        <select name="city" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"
+                            style="width:40%;margin-left:1%;margin-bottom:0%;">
+                            <option value="" selected>select city</option>
+                            {% for city in cities %}
+                            <option value="{{city.name}}">{{city.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+                    <p style="display: flex;"><select name="status" class="btn btn-secondary dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            style="width:40%;margin-left:1%;margin-bottom:0%;">
+                            <option value="" selected>select status</option>
+                            <option value="Used">Used</option>
+                            <option value="New">New</option>
+                        </select>
+                        <select class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false" style="width:40%;margin-left:1%;margin-bottom:0%;"
+                            name="power_source">
+                            <option value="" selected>select power source</option>
+                            {% for source in sources %}
+                            <option value="{{source.source}}">{{source.source}}</option>
+                            {% endfor %}
+                        </select>
+                        <select class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false" style="width:40%;margin-left:1%;margin-bottom:0%;"
+                            name="transmission">
+                            <option value="" selected>select transmission</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Automatic">Automatic</option>
+                        </select>
+                    </p>
+                    <p style="display: flex;"><select name="color" class="btn btn-secondary dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            style="width:40%;margin-left:1%;margin-bottom:0%;">
+                            <option value="" selected>select color</option>
+                            {%for color in colors%}
+                            <option value="{{color.color_name}}">{{color.color_name}}</option>
+                            {%endfor%}
+                        </select>
+                        <input placeholder="from price" type="number" name="min_price"
+                            class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false" style="width:40%;margin-left:1%;margin-bottom:0%;">
+                        <input placeholder="to price" type="number" name="max_price"
+                            class="btn btn-secondary dropdown-toggle"
+                            style="width:40%;margin-left:1%;margin-bottom:0%;">
+                    </p>
+                    <p style="display: flex;"><input placeholder="from year" type="number" name="min_year" min="{{min_year}}"
+                        max="{{max_year}}" class="btn btn-secondary dropdown-toggle" style="width:40%;margin-left:1%;margin-bottom:0%;">
+                    <input placeholder="to year" name="max_year" type="number" min="{{min_year}}"
+                        max="{{max_year}}" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false"
+                        style="width:40%;margin-left:1%;margin-bottom:0%;"><br>
+                        <input placeholder="number of passengers" type="number" min="1" max="10" name="num_passengers"
+                        class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false" style="width:40%;margin-left:1%;margin-bottom:0%;"></p>
+                    <p style="display: flex;"><input placeholder="min horsepower" type="number" name="min_bhp"
+                        class="btn btn-secondary dropdown-toggle" style="width:40%;margin-left:1%;margin-bottom:0%;">
+                        <input placeholder="max horsepower" type="number" name="max_bhp"
+                            class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false" style="width:40%;margin-left:1%;margin-bottom:0%;">
+                            <input style="width:40%;margin-left:1%;margin-bottom:0%;background-color:#dca33a;"
+                            class="btn btn-secondary dropdown-toggle" type="submit" value="Search">
+                    </p>
+                </form>
+                <div class="results last"
+                    style="border:solid 2px black; width:90%; height:250px;margin:0 auto; background-color:#f8f9fa;">
+                    <h5 style="font-family:cursive; margin-top:2%;margin-left: 1%;">Results</h5>
+
+            {% if request.session.cars %}
+                {% for car in request.session.cars %}
+                    <p style="margin-left: 1%;"><a href="/car/{{car.0}}/view">{{car.2}} {{car.1}} {{car.4}} | Price: {{car.5}} | {{car.6}}</a>{% if car.3 == request.session.first_name %}&ensp;&ensp;&ensp;&ensp; This is one of you cars{% endif %}</p>
+                {% endfor %}
+            {% else %}
+                {% if request.session.search_performed  %}
+                    <p>No results match your search</p>
+                {% endif %}
+            {% endif %}
+                </div>
+            </div>
+            <div class="last" style="border:solid 2px black; width:35%; margin-left:1%; background-color: #f8f9fa"><br>
+                <h4 style="margin-left:3%; font-family:cursive;">Recently added cars</h4>
+                <hr>
+                <center>
+                    <table>
+                        <td>
+                            {% for c in lastCars %}
+                            <tr>
+                                <a href="/car/{{c.id}}/view"><img src="/images/{{c.photo}}"></a>
+                            </tr>
+                            <tr>
+                                <p style="font-family: cursive;">{{c.model.manufacturer.manufacturer}} {{c.model.model}} {{c.year}} | {{c.price}} NIS
+                                </p>
+                            </tr>
+                            <hr>
+                            {%endfor%}
+                        </td>
+                    </table>
+                </center>
+            </div>
+        </div>
+    </main>
+    <script>
+        function myFunction() {
+            alert("Hello! You must be logged in to open this page");
+        }
+    </script>
 </body>
+
 </html>
