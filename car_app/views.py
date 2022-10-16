@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
 from . import models
 from django.core import serializers
+import json
 
 # Create your views here.
 
@@ -104,6 +105,7 @@ def logout(request):
 
 
 def dashboard(request):
+<<<<<<< HEAD
     try:
         print(models.get_searched_cars(request))
         context = {
@@ -140,8 +142,22 @@ def dashboard(request):
                 'lastCars': models.Car.objects.all().order_by('-id')[:5],
                 'colors': models.Colors.objects.all(),
             }
+=======
+    # print(models.get_searched_cars(request))
+    context = {
+        'cities': models.get_all_cities(),
+        'manufacturers': models.get_all_manufacturers(),
+        'models': models.get_all_models(),
+        'sources': models.get_all_sources(),
+        'min_year': models.year_limits()[0],
+        'max_year': models.year_limits()[1],
+    }
+    # print('context read')
+>>>>>>> 8ae64b5dc29444a820c90b4f6800b45c3f4c5fbc
     # if 'search_result' in request.session:
-    #     context['cars'] = request.session['search_result']
+    #     print('context read')
+    #     context['search_cars'] = request.session['search_cars']
+    #     context['search_models'] = request.session['search_models']
     return render(request, 'dashboard.html', context)
 
 
@@ -341,6 +357,7 @@ def delete_car(request, id):
     car.delete()
     return JsonResponse({'success': True, 'message': 'Delete', 'id': id})
 
+<<<<<<< HEAD
 
 def about_us(request):
     context = {
@@ -354,3 +371,28 @@ def contact_us(request):
         'lastCars': models.Car.objects.all().order_by('-id')[:5],
     }
     return render(request, 'contact_us.html', context)
+=======
+def search_car(request):
+    # request.session['search_result'] = serializers.serialize("json", models.get_searched_cars(request))
+    request.session['search_result'] = list(models.get_searched_cars(request).values('id', 'model'))
+    print('session')
+    print(request.session['search_result'])
+    car_id_list = []
+    model_id_list = []
+    for dict in request.session['search_result']:
+        car_id_list.append(dict['id'])
+        model_id_list.append(dict['model'])
+    cars = []
+    _models = []
+    for id in car_id_list:
+        cars.append(models.get_car(id))
+    for model_id in model_id_list:
+        _models.append(models.get_car_model_by_id(model_id))
+    request.session['search_cars'] = serializers.serialize("json", cars)
+    request.session['search_models'] = serializers.serialize("json", _models)
+    print('second session')
+    print(request.session['search_models'])
+    print('cars and models lists')
+    print(cars, _models)
+    return redirect('/dashboard')
+>>>>>>> 8ae64b5dc29444a820c90b4f6800b45c3f4c5fbc

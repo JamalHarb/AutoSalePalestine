@@ -296,6 +296,9 @@ def get_all_models():
 def get_car_model(request):
     return CarModel.objects.get(model=request.POST['model'], manufacturer=get_manufacturer(request))
 
+def get_car_model_by_id(id):
+    return CarModel.objects.get(id=id)
+
 def get_all_sources():
     return PowerSource.objects.all()
 
@@ -359,6 +362,7 @@ def update_car(request, id):
     car.save()
 
 def get_searched_cars(request):
+<<<<<<< HEAD
     query = {}
     if request.POST['manufacturer']:
         query['model__manufacturer__manufacturer'] = request.POST['manufacturer']
@@ -390,6 +394,33 @@ def get_searched_cars(request):
         query['bhp__lte'] = request.POST['max_bhp']
     return Car.objects.filter(**query)
 
+=======
+    user = get_logged_user(request)
+    # return Car.objects.filter(
+    #     color = request.GET.get('color'),
+    #     year = request.GET.get('year'),
+    #     num_passengers = request.GET.get('num-passengers'),
+    #     transmission = request.GET.get('transmission'),
+    #     status = request.GET.get('status'),
+    #     price = request.GET.get('price'),
+    #     bhp = request.GET.get('bhp', 0),
+    #     city__name = request.GET.get('city'),
+    #     power_source__source = request.GET.get('power-source'),
+    #     model__model = request.GET.get('model')
+    # )
+    return Car.objects.filter(
+        color = request.POST['color'],
+        year = request.POST['year'],
+        num_passengers = request.POST['num-passengers'],
+        transmission = request.POST['transmission'],
+        status = request.POST['status'],
+        price = request.POST['price'],
+        bhp = request.POST['bhp'],
+        city = get_city(request),
+        power_source = get_power_source(request),
+        model = get_car_model(request)
+    )
+>>>>>>> 8ae64b5dc29444a820c90b4f6800b45c3f4c5fbc
 
 def year_limits():
     min_year = datetime.today().year-120
