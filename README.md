@@ -16,6 +16,11 @@ Starting off with a brief description of our project, the idea of our project fi
 - Python -> django, orm, querysets, 
 
 ![1.dashboard.PNG](https://github.com/JamalHarb/AutoSalePalestine/blob/main/AutoSalePalestineScreenshots/1.dashboard.PNG?raw=true)
+![2.login-registration.PNG](https://github.com/JamalHarb/AutoSalePalestine/blob/main/AutoSalePalestineScreenshots/2.login-registration.PNG?raw=true)
+![3.add_car.PNG](https://github.com/JamalHarb/AutoSalePalestine/blob/main/AutoSalePalestineScreenshots/3.add_car.PNG?raw=true)
+![4.my_requests.PNG](https://github.com/JamalHarb/AutoSalePalestine/blob/main/AutoSalePalestineScreenshots/4.my_requests.PNG?raw=true)
+![5.requst_view.PNG](https://github.com/JamalHarb/AutoSalePalestine/blob/main/AutoSalePalestineScreenshots/5.requst_view.PNG?raw=true)
+![6.car_view.PNG](https://github.com/JamalHarb/AutoSalePalestine/blob/main/AutoSalePalestineScreenshots/6.car_view.PNG?raw=true)
 
 ## This project was done by:
 - Jamal Harb
