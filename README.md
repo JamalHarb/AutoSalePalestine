@@ -15,6 +15,8 @@ Starting off with a brief description of our project, the idea of our project fi
 - AJAX
 - Python -> django, orm, querysets, 
 
+![1.dashboard.PNG](https://github.com/JamalHarb/AutoSalePalestine/blob/main/AutoSalePalestineScreenshots/1.dashboard.PNG?raw=true)
+
 ## This project was done by:
 - Jamal Harb
 - Ahmad Tomeh
